@@ -10,7 +10,7 @@ resource "aws_key_pair" "devops_key" {
 resource "aws_security_group" "devops_sg" {
   name        = "devops-sg"
   description = "Allow SSH and app access"
-  vpc_id      = null # Puedes eliminar o completar esto si trabajas dentro de una VPC personalizada
+  vpc_id      = null 
 
   ingress {
     description = "SSH"
@@ -49,7 +49,7 @@ resource "aws_instance" "devops_app" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.devops_key.key_name
   vpc_security_group_ids = [aws_security_group.devops_sg.id]
-  user_data              = file("user-data.sh")
+#  user_data              = file("user-data.sh") #
 
   tags = {
     Name = "devops-portfolio-app"
