@@ -1,0 +1,45 @@
+name: Deploy Next.js App to EC2
+
+on:
+  push:
+    branches:
+      - devops  # Branch of your "app" submodule that triggers the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout main repo
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app ./app
+
+    - name: Push Docker image
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
+
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
+          docker stop nextjs-app || true
+          docker rm nextjs-app || true
+          docker run -d --name nextjs-app -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
