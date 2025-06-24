@@ -1,0 +1,6 @@
+- name: Configure NGINX as a reverse proxy for Next.js
+  hosts: ec2
+  become: true
+
+  roles:
+    - nginx

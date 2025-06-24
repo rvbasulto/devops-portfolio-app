@@ -27,6 +27,13 @@ resource "aws_security_group" "devops_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+  description = "Allow ping (ICMP)"
+  from_port   = -1
+  to_port     = -1
+  protocol    = "icmp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
 
   egress {
     description = "Allow all outbound"
