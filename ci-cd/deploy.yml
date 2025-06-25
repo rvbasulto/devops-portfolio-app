@@ -34,7 +34,7 @@ jobs:
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
+        username: rvbasulto
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
