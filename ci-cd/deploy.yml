@@ -1,11 +1,11 @@
-name: Deploy Next.js App to EC2
+name: Deploy Next.js App to HETZNER
 
 on:
   push:
     branches:
       - master  # runs only when pushing to master
   workflow_dispatch:
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -31,12 +31,12 @@ jobs:
       run: |
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
 
-    - name: Deploy to EC2 via SSH
+    - name: Deploy to HETZNER via SSH
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.EC2_HOST }}
+        host: ${{ secrets.HETZNER_HOST }}
         username: rvbasulto
-        key: ${{ secrets.EC2_SSH_KEY }}
+        key: ${{ secrets.HETZNER_SSH_KEY }}
         script: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nextjs-portfolio-app
           docker stop nextjs-app || true
