@@ -34,8 +34,8 @@
     enabled: true
     state: started
 
-- name: Add ubuntu user to the docker group
+- name: Add rvbasulto user to the docker group
   user:
-    name: ubuntu
+    name: rvbasulto
     groups: docker
     append: yes
