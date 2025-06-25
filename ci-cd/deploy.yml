@@ -3,7 +3,7 @@ name: Deploy Next.js App to EC2
 on:
   push:
     branches:
-      - master  # se ejecuta solo cuando haces push a master
+      - master  # runs only when pushing to master
 
 jobs:
   deploy:
