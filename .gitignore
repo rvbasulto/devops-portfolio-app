@@ -34,11 +34,11 @@ coverage/
 # ========================
 # Terraform
 # ========================
-infra/.terraform/
-infra/terraform.tfstate
-infra/terraform.tfstate.backup
-infra/.terraform.lock.hcl
-infra/crash.log
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/crash.log
 
 # ========================
 # Docker
