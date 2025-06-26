@@ -1,47 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevOps Portfolio Deployment
 
-## Getting Started
+This repository demonstrates a complete DevOps pipeline for deploying a containerized Next.js application using modern tools and practices. The application is built and maintained separately, and the deployment process is fully automated using GitHub Actions, Docker, and Ansible on a VPS hosted at Hetzner.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📊 Architecture Overview
+
+```
++---------------------------+       GitHub Actions       +----------------------+
+|  Application Repository  | -------------------------> |  Central Deploy Repo |
+| (Next.js + Dockerfile)   |  trigger via dispatch API  |  (CI/CD workflow)    |
++---------------------------+                            +----------------------+
+                                                            |
+                                                            | SSH
+                                                            v
+                                                     +------------+
+                                                     |   VPS @    |
+                                                     |  Hetzner   |
+                                                     +------------+
+                                                          |
+                                                          | Docker + NGINX
+                                                          v
+                                              [ Containerized Next.js App ]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 What This Project Covers
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Containerization of a Next.js application using Docker
+* CI/CD automation using GitHub Actions and `repository_dispatch`
+* Secure centralized deployment flow
+* VPS provisioning with Ansible (Docker + NGINX)
+* Domain name configuration and HTTPS via Certbot
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🔨 Tools Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Next.js**: Frontend framework
+* **Docker**: Containerize the app for consistent deployments
+* **GitHub Actions**: CI/CD workflow for building and deploying
+* **Ansible**: Provision Docker and NGINX on the VPS
+* **NGINX**: Reverse proxy to expose the Next.js container
+* **Hetzner VPS**: Production environment
+* **Certbot**: Free SSL certificates
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ How It Works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Code changes are pushed to the `main` branch of the app repo.
+2. A GitHub Actions workflow sends a `repository_dispatch` event to the central `actions-workflows` repository.
+3. The central repo listens for `deploy-app` events.
+4. It clones the app code, builds a Docker image, pushes it to Docker Hub.
+5. It connects to the VPS over SSH and runs the container.
+6. NGINX proxies requests from the domain to the app.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-<-- Test deploy 1-->
-<-- Test deploy 2 -->
-<-- Test deploy 3 -->
-<-- Test deploy 4 -->
-<-- Test deploy  -->
-<-- Test deploy  -->
-<-- Test deploy  -->
-<-- Test deploy  -->
-<-- Test deploy  -->
-<-- Test deploy  -->
+---
 
+## 🔑 Secrets and Security
+
+Secrets are **not stored in the app repo**. Only the central deployment repository manages:
+
+* `GH_PAT`: GitHub token to clone private repos
+* `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`
+* `SSH_KEY`, `SSH_USER`, `HOST`
+
+The app repo only stores a token `PAT_ACTIONS_WORKFLOWS` to call the deployment API.
+
+---
+
+## 🚫 Why This Matters
+
+This structure:
+
+* Keeps the deployment logic centralized
+* Is secure and scalable for multiple apps
+* Mirrors real-world DevOps pipelines used in industry
+
+---
+
+## ✨ Future Improvements
+
+* Add monitoring stack (Prometheus + Grafana)
+* Add staging environment
+* Use reusable workflows
+* Extend support to more frontend/backend apps
+
+---
+
+## 📖 Related Repositories
+
+* [App Repo](https://github.com/grdelgado96/Devops_Portfolio) — Next.js portfolio (private)
+* [Central Actions](https://github.com/rvbasulto/actions-workflows) — CI/CD workflows
+
+---
+
+Feel free to fork or adapt this architecture for your own projects!

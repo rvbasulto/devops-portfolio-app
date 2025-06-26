@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name {{ ansible_host }};
+    server_name {{ certbot_domain }} www.{{ certbot_domain }};
 
     location / {
         proxy_pass http://localhost:3000;
