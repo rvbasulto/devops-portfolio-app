@@ -5,11 +5,12 @@
   vars:
     certbot_email: rvazquezbasulto@gmail.com
     certbot_domain: rcvb.info
+    ssl_email: rvazquezbasulto@gmail.com
 
   roles:
     - docker
     - nginx
     - certbot
-    
+    - monitoring
 
   

@@ -1,0 +1,29 @@
+---
+- name: Ensure grafana config is present
+  template:
+    src: grafana.conf.j2
+    dest: /etc/nginx/sites-available/grafana.rcvb.info
+    mode: 0644
+
+- name: Enable grafana site
+  file:
+    src: /etc/nginx/sites-available/grafana.rcvb.info
+    dest: /etc/nginx/sites-enabled/grafana.rcvb.info
+    state: link
+    force: true
+
+- name: Test nginx configuration
+  command: nginx -t
+
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Ensure SSL certificate for grafana.rcvb.info
+  command: >
+    certbot --nginx --non-interactive --agree-tos
+    -m {{ ssl_email }}
+    -d grafana.rcvb.info
+  args:
+    creates: /etc/letsencrypt/live/grafana.rcvb.info/fullchain.pem

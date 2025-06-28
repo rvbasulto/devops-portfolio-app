@@ -21,3 +21,5 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+
+- import_tasks: grafana.yml

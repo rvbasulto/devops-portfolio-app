@@ -1,0 +1,26 @@
+---
+# tasks/main.yml
+
+- name: Create monitoring directory
+  file:
+    path: /opt/monitoring
+    state: directory
+    mode: 0755
+
+- name: Copy docker-compose file
+  copy:
+    src: docker-compose.yml
+    dest: /opt/monitoring/docker-compose.yml
+    mode: 0644
+
+- name: Copy Prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/monitoring/prometheus.yml
+    mode: 0644
+
+- name: Launch monitoring stack
+  shell: docker compose up -d
+  args:
+    chdir: /opt/monitoring
+
