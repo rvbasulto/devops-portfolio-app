@@ -1,26 +1,71 @@
 ---
-# tasks/main.yml
+# ansible/roles/monitoring/tasks/main.yml
 
-- name: Create monitoring directory
+- name: Ensure python3-pip is installed
+  apt:
+    name: python3-pip
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Install Python Docker SDK via apt
+  apt:
+    name: python3-docker
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Ensure monitoring directory exists
   file:
     path: /opt/monitoring
     state: directory
     mode: 0755
 
-- name: Copy docker-compose file
+- name: Copy docker-compose file for Prometheus and Grafana
   copy:
     src: docker-compose.yml
     dest: /opt/monitoring/docker-compose.yml
     mode: 0644
 
-- name: Copy Prometheus config
-  template:
-    src: prometheus.yml.j2
-    dest: /opt/monitoring/prometheus.yml
+- name: Remove old Grafana container if it exists
+  docker_container:
+    name: grafana
+    state: absent
+    force_kill: true
+    keep_volumes: true
+  ignore_errors: true
+
+- name: Create provisioning directories for Grafana
+  file:
+    path: /etc/grafana/provisioning/{{ item }}
+    state: directory
+    mode: 0755
+  loop:
+    - datasources
+    - dashboards
+
+- name: Copy Prometheus datasource config
+  copy:
+    src: grafana/datasources/prometheus.yaml
+    dest: /etc/grafana/provisioning/datasources/prometheus.yaml
     mode: 0644
 
-- name: Launch monitoring stack
-  shell: docker compose up -d
-  args:
-    chdir: /opt/monitoring
+- name: Copy dashboard provisioning config
+  copy:
+    src: grafana/dashboards.yaml
+    dest: /etc/grafana/provisioning/dashboards/dashboards.yaml
+    mode: 0644
 
+- name: Copy dashboard JSON file
+  copy:
+    src: grafana/dashboards/node-exporter.json
+    dest: /etc/grafana/provisioning/dashboards/node-exporter.json
+    mode: 0644
+
+- name: Deploy or restart monitoring stack with Docker Compose V2
+  community.docker.docker_compose_v2:
+    project_src: /opt/monitoring
+    state: present
+    pull: never
+    remove_orphans: true
+    recreate: always
