@@ -4,7 +4,7 @@ This is my personal portfolio application — designed, containerized, and deplo
 
 ## 🔧 Tech Stack
 
-- **Frontend:** Next.js (developed by [Giselle Rodriguez](https://github.com/USERNAME))
+- **Frontend:** Next.js 
 - **Containerization:** Docker
 - **Provisioning & Configuration:** Ansible
 - **Web Server:** NGINX
